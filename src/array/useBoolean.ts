@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo, SetStateAction } from 'react';
 
 type UseBooleanAction = (initial: boolean) => [boolean, UseBooleanActions];
 
-type UseBooleanActions = {
+export type UseBooleanActions = {
   setValue: React.Dispatch<SetStateAction<boolean>>;
   toggle: () => void;
   setTrue: () => void;
