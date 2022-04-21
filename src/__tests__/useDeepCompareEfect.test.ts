@@ -10,7 +10,7 @@ test('useDeepCompareEffect handles changing values as expected', () => {
   expect(callback).toHaveBeenCalledTimes(1);
   callback.mockClear();
 
-  //no-changes (new object with same properties)
+  //no-changes (new object with same properties) <=> memoized
   deps = [1, { a: 'b' }, true];
   rerender();
   expect(callback).toHaveBeenCalledTimes(0);
@@ -38,4 +38,18 @@ test('useDeepCompareEffect handles changing values as expected', () => {
   rerender();
   expect(callback).toHaveBeenCalledTimes(1);
   callback.mockClear();
+});
+
+test('useDeepCompareEffect does NOT work with manipulation', () => {
+  const callback = jest.fn();
+  const deps = [{ a: 'b' }];
+  const { rerender } = renderHook(() => useDeepCompareEffect(callback, deps));
+
+  expect(callback).toHaveBeenCalledTimes(1);
+  callback.mockClear();
+
+  //modification
+  deps[0].a = 'c';
+  rerender();
+  expect(callback).toHaveBeenCalledTimes(0);
 });
