@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useDeepCompareEffect } from '../useDeepCompareEffect';
 import { renderHook } from '@testing-library/react-hooks';
 
@@ -53,3 +54,39 @@ test('useDeepCompareEffect does NOT work with manipulation', () => {
   rerender();
   expect(callback).toHaveBeenCalledTimes(0);
 });
+
+test('useDeepCompareEffect works with deep object similarities/differences', () => {
+  const callback = jest.fn();
+  let deps: Array<Record<string, unknown>> = [
+    {
+      a: {
+        b: {
+          c: 'd',
+        },
+      },
+    },
+  ];
+
+  const { rerender } = renderHook(() => useDeepCompareEffect(callback, deps));
+  expect(callback).toHaveBeenCalledTimes(1);
+  callback.mockClear();
+
+  //change primitive value
+  deps = [{ a: { b: { c: 'e' } } }];
+  rerender();
+  expect(callback).toHaveBeenCalledTimes(1);
+  callback.mockClear();
+
+  //no change
+  deps = [{ a: { b: { c: 'e ' } } }];
+  rerender();
+  expect(callback).toHaveBeenCalledTimes(1);
+  callback.mockClear();
+
+  //add properties
+  deps = [{ a: { b: { c: 'e' }, f: 'g' } }];
+  rerender();
+  expect(callback).toHaveBeenCalledTimes(1);
+  callback.mockClear();
+});
+
