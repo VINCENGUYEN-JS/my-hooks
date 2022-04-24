@@ -4,6 +4,7 @@ type PaginationState = {
   totalItems: number;
   // How many items on the page
   pageSize: number;
+  //Start page (could be any number to start current page )
   currentPage: number;
 };
 
@@ -49,6 +50,9 @@ type FinalPaginationState = {
   // The total page size
   pageSize: number;
 
+  //Total number of items
+  totalItems: number;
+
   // Jump directly to a page
   setPage: (page: number) => void;
 
@@ -67,6 +71,7 @@ type PaginationStateReducerActions = CurrentPageActions | TotalItemActions | Pag
 const getTotalPages = (totalItems: number, pageSize: number): number => Math.ceil(totalItems / pageSize);
 
 //When you have 10 pages and you are at page 10 you can't go to page 11 because of this condition
+// page > 0 && page < getTotalPages()
 const limitPageBounds = (totalItems: number, pageSize: number) => (page: number): number =>
   Math.min(Math.max(page, 0), getTotalPages(totalItems, pageSize) - 1);
 
@@ -149,8 +154,6 @@ const usePagination = ({
     totalItems,
     pageSize: initialPageSize,
     currentPage: initialPage,
-    previousEnabled: getPreviousEnabled,
-    nextEnabled: getNextEnabled,
   };
   const [paginationState, dispatch] = React.useReducer(paginationStateReducer, initialState);
 
@@ -166,6 +169,7 @@ const usePagination = ({
       dispatch({ type: 'SET_TOTAL_ITEMS', totalItems: totalItemsRef.current });
     };
   }, [totalItems]);
+
   return {
     ...paginationState,
     ...React.useMemo(() => getPaginationMeta(paginationState), [paginationState]),
