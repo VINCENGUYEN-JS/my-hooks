@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { usePagination } from '../usePagination/usePagination';
+import { usePagination, paginationStateReducer } from '../usePagination/usePagination';
 
 const DEFAULT_STATE = {
   totalItems: 100,
@@ -72,4 +72,54 @@ describe('usePagination', () => {
   //     });
   //     expect(result.current.totalItems).toBe(100);
   //   });
+});
+
+const MULTI_PAGE_FIRST_PAGE = {
+  totalItems: 100,
+  pageSize: 10,
+  currentPage: 0,
+};
+
+/**
+ * The advantage of this test is you don't have to wrap your fn in act
+ */
+describe('paginationStateReducer', () => {
+  it('sets the next page when not on the last page', () => {
+    const nextState = paginationStateReducer(MULTI_PAGE_FIRST_PAGE, { type: 'NEXT_PAGE' });
+    expect(nextState.currentPage).toBe(1);
+  });
+
+  it('does not set the next page when on the last page', () => {
+    const nextState = paginationStateReducer(
+      {
+        totalItems: 1,
+        currentPage: 0,
+        pageSize: 1,
+      },
+      {
+        type: 'NEXT_PAGE',
+      },
+    );
+    expect(nextState.currentPage).toBe(0);
+  });
+
+  it('sets the previous page when not on the first page', () => {
+    const nextState = paginationStateReducer(
+      { totalItems: 2, pageSize: 1, currentPage: 1 },
+      { type: 'PREVIOUS_PAGE' },
+    );
+    expect(nextState.currentPage).toBe(0);
+  });
+
+  it('set the previous page when on the first page', () => {
+    const nextState = paginationStateReducer(
+      {
+        totalItems: 2,
+        pageSize: 1,
+        currentPage: 0,
+      },
+      { type: 'PREVIOUS_PAGE' },
+    );
+    expect(nextState.currentPage).toBe(0);
+  });
 });

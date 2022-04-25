@@ -191,4 +191,4 @@ const usePagination = ({
   };
 };
 
-export { usePagination };
+export { usePagination, paginationStateReducer };
