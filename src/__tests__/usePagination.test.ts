@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { usePagination, paginationStateReducer } from '../usePagination/usePagination';
+import { usePagination, paginationStateReducer, getPaginationMeta } from '../usePagination/usePagination';
 
 const DEFAULT_STATE = {
   totalItems: 100,
@@ -121,5 +121,30 @@ describe('paginationStateReducer', () => {
       { type: 'PREVIOUS_PAGE' },
     );
     expect(nextState.currentPage).toBe(0);
+  });
+});
+
+describe('getPaginationMeta', () => {
+  it('correct calculates startIndex and lastIndex on the first page', () => {
+    const meta = getPaginationMeta(MULTI_PAGE_FIRST_PAGE);
+    expect(meta.startIndex).toBe(0);
+    expect(meta.endIndex).toBe(9);
+  });
+
+  it('correct calculates startIndex and lastIndex on the second page', () => {
+    const meta = getPaginationMeta({ ...MULTI_PAGE_FIRST_PAGE, currentPage: 1 });
+    expect(meta.startIndex).toBe(10);
+    expect(meta.endIndex).toBe(19);
+  });
+
+  it('correct calculates startIndex and lastIndex on the last page', () => {
+    const meta = getPaginationMeta({ ...MULTI_PAGE_FIRST_PAGE, currentPage: 9 });
+    expect(meta.startIndex).toBe(90);
+    expect(meta.endIndex).toBe(99);
+  });
+
+  it('correct calculates endIndex on a half-full last page', () => {
+    const meta = getPaginationMeta({ totalItems: 92, pageSize: 10, currentPage: 9 });
+    expect(meta.endIndex).toBe(91);
   });
 });

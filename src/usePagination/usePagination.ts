@@ -89,7 +89,7 @@ const getPreviousEnabled = (currentPage: number): boolean => currentPage > 0;
 
 const getNextEnabled = (currentPage: number, totalPages: number): boolean => currentPage + 1 < totalPages;
 
-const getPaginationMeta = ({ totalItems, pageSize, currentPage }: PaginationState) => {
+export const getPaginationMeta = ({ totalItems, pageSize, currentPage }: PaginationState) => {
   const totalPages = getTotalPages(totalItems, pageSize);
   return {
     totalPages,
