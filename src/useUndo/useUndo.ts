@@ -4,10 +4,12 @@ enum ActionType {
   Undo = 'UNDO',
   Redo = 'REDO',
   Reset = 'RESET',
+  Set = 'SET',
 }
 
 interface Actions<T> {
   reset: (newPresent: T) => void;
+  set: (newPresent: T) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
@@ -68,6 +70,16 @@ const useUndo = <T>(initialPresent: T): [State<T>, Actions<T>] => {
           future: [],
         };
       }
+      case ActionType.Set: {
+        const { newPresent } = action;
+        return {
+          past: [...past, present],
+          present: newPresent!,
+          future: [],
+        };
+      }
+      default:
+        return state;
     }
   };
   const [state, dispatch] = React.useReducer(reducer, {
@@ -94,7 +106,10 @@ const useUndo = <T>(initialPresent: T): [State<T>, Actions<T>] => {
   const reset = React.useCallback((newPresent: T) => {
     dispatch({ type: ActionType.Reset, newPresent });
   }, []);
-  return [state, { reset, undo, redo, canUndo, canRedo }];
+  const set = React.useCallback((newPresent: T) => {
+    dispatch({ type: ActionType.Set, newPresent });
+  }, []);
+  return [state, { reset, set, undo, redo, canUndo, canRedo }];
 };
 
 export { useUndo };
