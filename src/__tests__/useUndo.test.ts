@@ -27,25 +27,50 @@ describe('useUndo', () => {
       present: 3,
       future: [],
     });
+
+    test('multiple set with undo', async () => {
+      const { result } = renderHook(() => useUndo(0));
+      const [_, { set }] = result.current;
+      act(() => {
+        set(1);
+        set(2);
+        set(3);
+      });
+      act(() => {
+        result.current[1].undo();
+        result.current[1].undo();
+        result.current[1].undo();
+      });
+      expect(result.current[0]).toEqual({
+        past: [],
+        present: 0,
+        future: [1, 2, 3],
+      });
+    });
   });
 
-  // test('multiple set with undo', async () => {
-  //   const { result } = renderHook(() => useUndo(0));
-  //   const [_, { set, undo }] = result.current;
-  //   act(() => {
-  //     set(1);
-  //     set(2);
-  //     set(3);
-  //   });
-  //   act(() => {
-  //     undo();
-  //     undo();
-  //     undo();
-  //   });
-  //   expect(result.current[0]).toEqual({
-  //     past: [0, 1, 2],
-  //     present: 3,
-  //     future: [],
-  //   });
-  // });
+  test('multiple set with undo and redo', async () => {
+    const { result } = renderHook(() => useUndo(0));
+    const [_, { set }] = result.current;
+    act(() => {
+      set(1);
+      set(2);
+      set(3);
+    });
+    act(() => {
+      result.current[1].undo();
+      result.current[1].undo();
+      result.current[1].undo();
+    });
+    act(() => {
+      result.current[1].redo();
+      result.current[1].redo();
+      result.current[1].redo();
+    });
+    expect(result.current[0]).toEqual({
+      past: [0, 1, 2],
+      present: 3,
+      future: [],
+    });
+  });
 });
