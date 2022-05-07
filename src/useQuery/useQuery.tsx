@@ -16,7 +16,7 @@ export const ContextProvider = (props: ContextProviderProps) => {
   return <AppContext.Provider value={{ cache }}>{children}</AppContext.Provider>;
 };
 
-export const useAppContext = React.useContext(AppContext);
+export const useAppContext = () => React.useContext(AppContext);
 
 type InitialState = {
   loading: boolean;
@@ -75,7 +75,7 @@ const DEFAULT_OPTION = {
 
 type UseQueryProps = {
   url: string;
-  options: {
+  options?: {
     sizeCache: number;
     saveCache: boolean;
     refetchInterval: number;
@@ -84,7 +84,7 @@ type UseQueryProps = {
 
 export const useQuery = (props: UseQueryProps) => {
   const { url, options: userOptions } = props;
-  const { cache } = useAppContext;
+  const { cache } = useAppContext();
   const options = {
     ...DEFAULT_OPTION,
     userOptions,
